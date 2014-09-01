@@ -40,6 +40,9 @@ import android.view.View;
  * space to screen space.
  */
 class HighlightView {
+	public static interface OnDrawFinished {
+		public void onDrawFinished(HighlightView v, Canvas canvas);
+	}
 
     public static final int GROW_NONE        = (1 << 0);
     public static final int GROW_LEFT_EDGE   = (1 << 1);
@@ -64,8 +67,11 @@ class HighlightView {
     private final Paint outlinePaint = new Paint();
     private final Paint handlePaint = new Paint();
 
-    private View viewContext; // View displaying image
-    private boolean showThirds;
+	private OnDrawFinished mOnDrawFinished = null;
+	private View viewContext; // View displaying image
+
+
+	private boolean showThirds;
     private int highlightColor;
 
     private ModifyMode modifyMode = ModifyMode.None;
@@ -76,10 +82,42 @@ class HighlightView {
     private float outlineWidth;
     private boolean isFocused;
 
+	private boolean needCenterBaseOnThis = true;
+
     public HighlightView(View context) {
         viewContext = context;
         initStyles(context.getContext());
     }
+
+	public boolean isShowThirds()
+	{
+		return showThirds;
+	}
+
+	public void setShowThirds(boolean showThirds)
+	{
+		this.showThirds = showThirds;
+	}
+
+	public OnDrawFinished getOnDrawFinshed()
+	{
+		return mOnDrawFinished;
+	}
+
+	public void setOnDrawFinshed(OnDrawFinished onDrawFinished)
+	{
+		this.mOnDrawFinished = onDrawFinished;
+	}
+
+	public boolean isNeedCenterBaseOnThis()
+	{
+		return needCenterBaseOnThis;
+	}
+
+	public void setNeedCenterBaseOnThis(boolean needCenterBaseOnThis)
+	{
+		this.needCenterBaseOnThis = needCenterBaseOnThis;
+	}
 
     private void initStyles(Context context) {
         TypedValue outValue = new TypedValue();
@@ -155,6 +193,10 @@ class HighlightView {
                 drawHandles(canvas);
             }
         }
+
+	    if (mOnDrawFinished != null) {
+		    mOnDrawFinished.onDrawFinished(this, canvas);
+	    }
     }
 
     /*
@@ -192,6 +234,7 @@ class HighlightView {
         canvas.drawCircle(xMiddle, drawRect.top, handleRadius, handlePaint);
         canvas.drawCircle(drawRect.right, yMiddle, handleRadius, handlePaint);
         canvas.drawCircle(xMiddle, drawRect.bottom, handleRadius, handlePaint);
+
     }
 
     private void drawThirds(Canvas canvas) {

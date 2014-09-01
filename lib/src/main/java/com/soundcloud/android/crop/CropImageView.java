@@ -164,28 +164,32 @@ public class CropImageView extends ImageViewTouchBase {
     // If the cropping rectangle's size changed significantly, change the
     // view's center and scale according to the cropping rectangle.
     private void centerBasedOnHighlightView(HighlightView hv) {
-        Rect drawRect = hv.drawRect;
+	    if (!hv.isNeedCenterBaseOnThis()) {
+		    return;
+	    }
 
-        float width = drawRect.width();
-        float height = drawRect.height();
+	    Rect drawRect = hv.drawRect;
 
-        float thisWidth = getWidth();
-        float thisHeight = getHeight();
+	    float width = drawRect.width();
+	    float height = drawRect.height();
 
-        float z1 = thisWidth / width * .6F;
-        float z2 = thisHeight / height * .6F;
+	    float thisWidth = getWidth();
+	    float thisHeight = getHeight();
 
-        float zoom = Math.min(z1, z2);
-        zoom = zoom * this.getScale();
-        zoom = Math.max(1F, zoom);
+	    float z1 = thisWidth / width * .6F;
+	    float z2 = thisHeight / height * .6F;
 
-        if ((Math.abs(zoom - getScale()) / zoom) > .1) {
-            float[] coordinates = new float[] { hv.cropRect.centerX(), hv.cropRect.centerY() };
-            getUnrotatedMatrix().mapPoints(coordinates);
-            zoomTo(zoom, coordinates[0], coordinates[1], 300F);
-        }
+	    float zoom = Math.min(z1, z2);
+	    zoom = zoom * this.getScale();
+	    zoom = Math.max(1F, zoom);
 
-        ensureVisible(hv);
+	    if ((Math.abs(zoom - getScale()) / zoom) > .1) {
+		    float[] coordinates = new float[]{hv.cropRect.centerX(), hv.cropRect.centerY()};
+		    getUnrotatedMatrix().mapPoints(coordinates);
+		    zoomTo(zoom, coordinates[0], coordinates[1], 300F);
+	    }
+
+	    ensureVisible(hv);
     }
 
     @Override
