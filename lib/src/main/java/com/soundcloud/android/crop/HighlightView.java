@@ -52,7 +52,7 @@ class HighlightView {
     public static final int MOVE             = (1 << 5);
 
     private static final int DEFAULT_HIGHLIGHT_COLOR = 0xFF33B5E5;
-    private static final float HANDLE_RADIUS_DP = 12f;
+    private static final float HANDLE_RADIUS_DP = 9f;
     private static final float OUTLINE_DP = 2f;
 
     enum ModifyMode { None, Move, Grow }
@@ -235,6 +235,10 @@ class HighlightView {
         canvas.drawCircle(drawRect.right, yMiddle, handleRadius, handlePaint);
         canvas.drawCircle(xMiddle, drawRect.bottom, handleRadius, handlePaint);
 
+	    canvas.drawCircle(drawRect.left, drawRect.top, handleRadius, handlePaint);
+	    canvas.drawCircle(drawRect.right, drawRect.top, handleRadius, handlePaint);
+	    canvas.drawCircle(drawRect.right, drawRect.bottom, handleRadius, handlePaint);
+	    canvas.drawCircle(drawRect.left, drawRect.bottom, handleRadius, handlePaint);
     }
 
     private void drawThirds(Canvas canvas) {
