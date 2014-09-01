@@ -29,7 +29,6 @@ import android.net.Uri;
 import android.opengl.GLES10;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
 import android.provider.MediaStore;
 import android.view.Window;
 
@@ -38,7 +37,6 @@ import com.soundcloud.android.crop.util.Log;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.concurrent.CountDownLatch;
 
 /*
  * Modified from original in AOSP.
@@ -48,11 +46,6 @@ public class CropImageActivity extends ImageAreaPickerActivity {
     private static final boolean IN_MEMORY_CROP = Build.VERSION.SDK_INT < Build.VERSION_CODES.GINGERBREAD_MR1;
     private static final int SIZE_DEFAULT = 2048;
     private static final int SIZE_LIMIT = 4096;
-
-    private final Handler handler = new Handler();
-
-    private int aspectX;
-    private int aspectY;
 
     // Output image size
     private int maxX;
@@ -65,8 +58,6 @@ public class CropImageActivity extends ImageAreaPickerActivity {
     private boolean isSaving;
 
     private int sampleSize;
-    private RotateBitmap rotateBitmap;
-    private HighlightView cropView;
 
     @Override
     public void onCreate(Bundle icicle) {
@@ -153,85 +144,9 @@ public class CropImageActivity extends ImageAreaPickerActivity {
         return maxSize[0];
     }
 
-    private void startCrop() {
-        if (isFinishing()) {
-            return;
-        }
-        imageView.setImageRotateBitmapResetBase(rotateBitmap, true);
-        CropUtil.startBackgroundJob(this, null, getResources().getString(R.string.crop__wait),
-                new Runnable() {
-                    public void run() {
-                        final CountDownLatch latch = new CountDownLatch(1);
-                        handler.post(new Runnable() {
-                            public void run() {
-                                if (imageView.getScale() == 1F) {
-                                    imageView.center(true, true);
-                                }
-                                latch.countDown();
-                            }
-                        });
-                        try {
-                            latch.await();
-                        } catch (InterruptedException e) {
-                            throw new RuntimeException(e);
-                        }
-                        new Cropper().crop();
-                    }
-                }, handler
-        );
-    }
-
     protected void onDone() {
         super.onDone();
         onSaveClicked();
-    }
-
-    private class Cropper {
-
-        private void makeDefault() {
-            if (rotateBitmap == null) {
-                return;
-            }
-
-            HighlightView hv = new HighlightView(imageView);
-            final int width = rotateBitmap.getWidth();
-            final int height = rotateBitmap.getHeight();
-
-            Rect imageRect = new Rect(0, 0, width, height);
-
-            // Make the default size about 4/5 of the width or height
-            int cropWidth = Math.min(width, height) * 4 / 5;
-            @SuppressWarnings("SuspiciousNameCombination")
-            int cropHeight = cropWidth;
-
-            if (aspectX != 0 && aspectY != 0) {
-                if (aspectX > aspectY) {
-                    cropHeight = cropWidth * aspectY / aspectX;
-                } else {
-                    cropWidth = cropHeight * aspectX / aspectY;
-                }
-            }
-
-            int x = (width - cropWidth) / 2;
-            int y = (height - cropHeight) / 2;
-
-            RectF cropRect = new RectF(x, y, x + cropWidth, y + cropHeight);
-            hv.setup(imageView.getUnrotatedMatrix(), imageRect, cropRect, aspectX != 0 && aspectY != 0);
-            imageView.add(hv);
-        }
-
-        public void crop() {
-            handler.post(new Runnable() {
-                public void run() {
-                    makeDefault();
-                    imageView.invalidate();
-                    if (imageView.highlightViews.size() == 1) {
-                        cropView = imageView.highlightViews.get(0);
-                        cropView.setFocus(true);
-                    }
-                }
-            });
-        }
     }
 
     /*
