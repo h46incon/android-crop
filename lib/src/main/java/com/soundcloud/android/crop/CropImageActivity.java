@@ -31,7 +31,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.MediaStore;
-import android.view.View;
 import android.view.Window;
 
 import com.soundcloud.android.crop.util.Log;
@@ -67,7 +66,6 @@ public class CropImageActivity extends ImageAreaPickerActivity {
 
     private int sampleSize;
     private RotateBitmap rotateBitmap;
-    private CropImageView imageView;
     private HighlightView cropView;
 
     @Override
@@ -83,31 +81,6 @@ public class CropImageActivity extends ImageAreaPickerActivity {
             return;
         }
         startCrop();
-    }
-
-    private void initViews() {
-        imageView = (CropImageView) findViewById(R.id.crop_image);
-        imageView.context = this;
-        imageView.setRecycler(new ImageViewTouchBase.Recycler() {
-            @Override
-            public void recycle(Bitmap b) {
-                b.recycle();
-                System.gc();
-            }
-        });
-
-        findViewById(R.id.btn_cancel).setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                setResult(RESULT_CANCELED);
-                finish();
-            }
-        });
-
-        findViewById(R.id.btn_done).setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                onSaveClicked();
-            }
-        });
     }
 
     private void setupFromIntent() {
@@ -206,6 +179,11 @@ public class CropImageActivity extends ImageAreaPickerActivity {
                     }
                 }, handler
         );
+    }
+
+    protected void onDone() {
+        super.onDone();
+        onSaveClicked();
     }
 
     private class Cropper {
