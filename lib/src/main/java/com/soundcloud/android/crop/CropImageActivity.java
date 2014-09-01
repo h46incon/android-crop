@@ -33,6 +33,7 @@ import android.os.Handler;
 import android.provider.MediaStore;
 import android.view.View;
 import android.view.Window;
+
 import com.soundcloud.android.crop.util.Log;
 
 import java.io.IOException;
@@ -43,7 +44,7 @@ import java.util.concurrent.CountDownLatch;
 /*
  * Modified from original in AOSP.
  */
-public class CropImageActivity extends MonitoredActivity {
+public class CropImageActivity extends ImageAreaPickerActivity {
 
     private static final boolean IN_MEMORY_CROP = Build.VERSION.SDK_INT < Build.VERSION_CODES.GINGERBREAD_MR1;
     private static final int SIZE_DEFAULT = 2048;
