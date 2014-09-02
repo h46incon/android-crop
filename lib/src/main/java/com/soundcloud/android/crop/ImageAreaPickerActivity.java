@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Rect;
-import android.graphics.RectF;
 import android.net.Uri;
 import android.opengl.GLES10;
 import android.os.Bundle;
@@ -67,15 +66,15 @@ public abstract class ImageAreaPickerActivity extends MonitoredActivity {
         setupPickerView(cropImageView, Float.NaN, null);
     }
 
-    protected void setupPickerView(CropImageView cropImageView, RectF initImageArea) {
+    protected void setupPickerView(CropImageView cropImageView, Rect initImageArea) {
         setupPickerView(cropImageView, initImageArea, false);
     }
 
     protected void setupPickerView(CropImageView cropImageView,
-                                   RectF initImageArea, boolean maintainAspectRatio) {
+                                   Rect initImageArea, boolean maintainAspectRatio) {
         Float ratio = Float.NaN;
         if (maintainAspectRatio) {
-            ratio = initImageArea.height() / initImageArea.width();
+            ratio = (float)initImageArea.height() / initImageArea.width();
         }
 
         setupPickerView(cropImageView, ratio, initImageArea);
@@ -92,7 +91,7 @@ public abstract class ImageAreaPickerActivity extends MonitoredActivity {
      *                  but use aspect ratio values in INITAREA, and IGNORE aspectRatio
      */
     private void setupPickerView(CropImageView cropImageView,
-                                   float aspectRatio, RectF initImageArea) {
+                                   float aspectRatio, Rect initImageArea) {
         if (isFinishing()) {
             return;
         }
@@ -212,7 +211,7 @@ public abstract class ImageAreaPickerActivity extends MonitoredActivity {
         }
     }
 
-    private HighlightView setupDefaultPickerView(RectF initCropRect) {
+    private HighlightView setupDefaultPickerView(Rect initCropRect) {
         if (rotateBitmap == null) {
             return null;
         }
@@ -222,7 +221,7 @@ public abstract class ImageAreaPickerActivity extends MonitoredActivity {
         final int height = rotateBitmap.getHeight();
 
         Rect imageRect = new Rect(0, 0, width, height);
-        RectF cropRect = initCropRect;
+        Rect cropRect = initCropRect;
 
         if (cropRect == null) {
             // Make the default size about 4/5 of the width or height
@@ -242,7 +241,7 @@ public abstract class ImageAreaPickerActivity extends MonitoredActivity {
             int x = (width - cropWidth) / 2;
             int y = (height - cropHeight) / 2;
 
-            cropRect = new RectF(x, y, x + cropWidth, y + cropHeight);
+            cropRect = new Rect(x, y, x + cropWidth, y + cropHeight);
         }
         hv.setup(imageView.getUnrotatedMatrix(), imageRect, cropRect, !aspectRatio.isNaN());
         return hv;

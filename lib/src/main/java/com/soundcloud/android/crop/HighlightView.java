@@ -133,10 +133,10 @@ public class HighlightView {
         }
     }
 
-    public void setup(Matrix m, Rect imageRect, RectF cropRect, boolean maintainAspectRatio) {
+    public void setup(Matrix m, Rect imageRect, Rect cropRect, boolean maintainAspectRatio) {
         matrix = new Matrix(m);
 
-        this.cropRect = cropRect;
+        this.cropRect = new RectF(cropRect);
         this.imageRect = new RectF(imageRect);
         this.maintainAspectRatio = maintainAspectRatio;
 
