@@ -26,7 +26,6 @@ import android.graphics.Matrix;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.net.Uri;
-import android.opengl.GLES10;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -44,8 +43,6 @@ import java.io.OutputStream;
 public class CropImageActivity extends ImageAreaPickerActivity {
 
     private static final boolean IN_MEMORY_CROP = Build.VERSION.SDK_INT < Build.VERSION_CODES.GINGERBREAD_MR1;
-    private static final int SIZE_DEFAULT = 2048;
-    private static final int SIZE_LIMIT = 4096;
 
     // Output image size
     private int maxX;
@@ -135,22 +132,6 @@ public class CropImageActivity extends ImageAreaPickerActivity {
             sampleSize = sampleSize << 1;
         }
         return sampleSize;
-    }
-
-    private int getMaxImageSize() {
-        int textureLimit = getMaxTextureSize();
-        if (textureLimit == 0) {
-            return SIZE_DEFAULT;
-        } else {
-            return Math.min(textureLimit, SIZE_LIMIT);
-        }
-    }
-
-    private int getMaxTextureSize() {
-        // The OpenGL texture size is the maximum size that can be drawn in an ImageView
-        int[] maxSize = new int[1];
-        GLES10.glGetIntegerv(GLES10.GL_MAX_TEXTURE_SIZE, maxSize, 0);
-        return maxSize[0];
     }
 
     protected void onDone() {
