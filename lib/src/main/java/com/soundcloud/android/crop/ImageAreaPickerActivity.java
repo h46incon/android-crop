@@ -26,6 +26,8 @@ public abstract class ImageAreaPickerActivity extends MonitoredActivity {
     private CropImageView imageView;
     private HighlightView pickerView;
 
+    private boolean isPickerViewSetup = false;
+
     private int aspectX;
     private int aspectY;
     private int sampleSize;
@@ -56,11 +58,15 @@ public abstract class ImageAreaPickerActivity extends MonitoredActivity {
         return pickerView;
     }
 
-    protected void startPick(final CropImageView cropImageView) {
-        startPick(cropImageView, 0, 0);
+    protected boolean isPickerViewSetup() {
+        return isPickerViewSetup;
     }
 
-    protected void startPick(final CropImageView cropImageView, int aspectX, int aspectY) {
+    protected void setupPickerView(final CropImageView cropImageView) {
+        setupPickerView(cropImageView, 0, 0);
+    }
+
+    protected void setupPickerView(final CropImageView cropImageView, int aspectX, int aspectY) {
         if (isFinishing()) {
             return;
         }
@@ -78,6 +84,15 @@ public abstract class ImageAreaPickerActivity extends MonitoredActivity {
         });
 
         this.imageView.setImageRotateBitmapResetBase(rotateBitmap, true);
+        isPickerViewSetup = true;
+    }
+
+    public void startPicker() {
+        if (!isPickerViewSetup) {
+            Log.e("The picker view has not been setup, call 'setupPickerView' first");
+            return;
+        }
+
         CropUtil.startBackgroundJob(this, null, getResources().getString(R.string.crop__wait),
                 new Runnable() {
                     public void run() {
