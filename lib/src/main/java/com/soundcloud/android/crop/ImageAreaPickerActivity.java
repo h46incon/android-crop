@@ -1,5 +1,6 @@
 package com.soundcloud.android.crop;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Rect;
@@ -9,6 +10,8 @@ import android.opengl.GLES10;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
+
+import com.soundcloud.android.crop.util.Log;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -26,10 +29,14 @@ public abstract class ImageAreaPickerActivity extends MonitoredActivity {
     protected int aspectY;
     protected RotateBitmap rotateBitmap;
     protected HighlightView cropView;
+    protected int exifRotation;
+    protected Uri sourceUri;
+    protected int sampleSize;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setupFromIntent();
     }
 
     protected void initViews() {
@@ -120,11 +127,47 @@ public abstract class ImageAreaPickerActivity extends MonitoredActivity {
         return sampleSize;
     }
 
+    private void setupFromIntent() {
+        Intent intent = getIntent();
+        Bundle extras = intent.getExtras();
+
+        if (extras != null) {
+            aspectX = extras.getInt(Crop.Extra.ASPECT_X);
+            aspectY = extras.getInt(Crop.Extra.ASPECT_Y);
+        }
+
+        sourceUri = intent.getData();
+        if (sourceUri != null) {
+            exifRotation = CropUtil.getExifRotation(CropUtil.getFromMediaUri(getContentResolver(), sourceUri));
+
+            InputStream is = null;
+            try {
+                sampleSize = calculateBitmapSampleSize(sourceUri);
+                is = getContentResolver().openInputStream(sourceUri);
+                BitmapFactory.Options option = new BitmapFactory.Options();
+                option.inSampleSize = sampleSize;
+                rotateBitmap = new RotateBitmap(BitmapFactory.decodeStream(is, null, option), exifRotation);
+            } catch (IOException e) {
+                Log.e("Error reading image: " + e.getMessage(), e);
+                setResultException(e);
+            } catch (OutOfMemoryError e) {
+                Log.e("OOM reading image: " + e.getMessage(), e);
+                setResultException(e);
+            } finally {
+                CropUtil.closeSilently(is);
+            }
+        }
+    }
+
     /**
      *  This method will be called when DONE button is clicked.
      */
     protected void onDone(){
         return;
+    }
+
+    protected void setResultException(Throwable throwable) {
+        setResult(Crop.RESULT_ERROR, new Intent().putExtra(Crop.Extra.ERROR, throwable));
     }
 
     private class Cropper {

@@ -47,14 +47,10 @@ public class CropImageActivity extends ImageAreaPickerActivity {
     // Output image size
     private int maxX;
     private int maxY;
-    private int exifRotation;
 
-    private Uri sourceUri;
     private Uri saveUri;
 
     private boolean isSaving;
-
-    private int sampleSize;
 
     @Override
     public void onCreate(Bundle icicle) {
@@ -63,45 +59,12 @@ public class CropImageActivity extends ImageAreaPickerActivity {
         setContentView(R.layout.crop__activity_crop);
         initViews();
 
-        setupFromIntent();
         setupFromIntentSelf();
         if (rotateBitmap == null) {
             finish();
             return;
         }
         startCrop();
-    }
-
-    private void setupFromIntent() {
-        Intent intent = getIntent();
-        Bundle extras = intent.getExtras();
-
-        if (extras != null) {
-            aspectX = extras.getInt(Crop.Extra.ASPECT_X);
-            aspectY = extras.getInt(Crop.Extra.ASPECT_Y);
-        }
-
-        sourceUri = intent.getData();
-        if (sourceUri != null) {
-            exifRotation = CropUtil.getExifRotation(CropUtil.getFromMediaUri(getContentResolver(), sourceUri));
-
-            InputStream is = null;
-            try {
-                sampleSize = calculateBitmapSampleSize(sourceUri);
-                is = getContentResolver().openInputStream(sourceUri);
-                BitmapFactory.Options option = new BitmapFactory.Options();
-                option.inSampleSize = sampleSize;
-                rotateBitmap = new RotateBitmap(BitmapFactory.decodeStream(is, null, option), exifRotation);
-            } catch (IOException e) {
-                Log.e("Error reading image: " + e.getMessage(), e);
-                setResultException(e);
-            } catch (OutOfMemoryError e) {
-                Log.e("OOM reading image: " + e.getMessage(), e);
-                setResultException(e);
-            } finally {
-                CropUtil.closeSilently(is);
-            }
-        }
     }
 
     private void setupFromIntentSelf() {
@@ -325,10 +288,6 @@ public class CropImageActivity extends ImageAreaPickerActivity {
 
     private void setResultUri(Uri uri) {
         setResult(RESULT_OK, new Intent().putExtra(MediaStore.EXTRA_OUTPUT, uri));
-    }
-
-    private void setResultException(Throwable throwable) {
-        setResult(Crop.RESULT_ERROR, new Intent().putExtra(Crop.Extra.ERROR, throwable));
     }
 
 }
