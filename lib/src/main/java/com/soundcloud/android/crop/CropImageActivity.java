@@ -70,7 +70,7 @@ public class CropImageActivity extends ImageAreaPickerActivity {
             finish();
             return;
         }
-        startCrop(imageView, aspectX, aspectY);
+        startPick(imageView, aspectX, aspectY);
     }
 
     @Override

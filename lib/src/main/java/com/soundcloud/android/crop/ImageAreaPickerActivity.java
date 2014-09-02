@@ -24,7 +24,7 @@ public abstract class ImageAreaPickerActivity extends MonitoredActivity {
     private static final int SIZE_LIMIT = 4096;
     private final Handler handler = new Handler();
     private CropImageView imageView;
-    private HighlightView cropView;
+    private HighlightView pickerView;
 
     private int aspectX;
     private int aspectY;
@@ -46,21 +46,21 @@ public abstract class ImageAreaPickerActivity extends MonitoredActivity {
      * @return null is not starting crop
      */
     protected Rect getImageSelectedArea() {
-        if (cropView == null) {
+        if (pickerView == null) {
             return null;
         }
-        return cropView.getScaledCropRect(sampleSize);
+        return pickerView.getScaledCropRect(sampleSize);
     }
 
-    protected HighlightView getCropView() {
-        return cropView;
+    protected HighlightView getPickerView() {
+        return pickerView;
     }
 
-    protected void startCrop(final CropImageView cropImageView) {
-        startCrop(cropImageView, 0, 0);
+    protected void startPick(final CropImageView cropImageView) {
+        startPick(cropImageView, 0, 0);
     }
 
-    protected void startCrop(final CropImageView cropImageView, int aspectX, int aspectY) {
+    protected void startPick(final CropImageView cropImageView, int aspectX, int aspectY) {
         if (isFinishing()) {
             return;
         }
@@ -95,7 +95,7 @@ public abstract class ImageAreaPickerActivity extends MonitoredActivity {
                         } catch (InterruptedException e) {
                             throw new RuntimeException(e);
                         }
-                        new Cropper().crop();
+                        new AreaPicker().start();
                     }
                 }, handler
         );
@@ -182,7 +182,7 @@ public abstract class ImageAreaPickerActivity extends MonitoredActivity {
         return false;
     }
 
-    private class Cropper {
+    private class AreaPicker {
 
         private void makeDefault() {
             if (rotateBitmap == null) {
@@ -216,14 +216,14 @@ public abstract class ImageAreaPickerActivity extends MonitoredActivity {
             imageView.add(hv);
         }
 
-        public void crop() {
+        public void start() {
             handler.post(new Runnable() {
                 public void run() {
                     makeDefault();
                     imageView.invalidate();
                     if (imageView.highlightViews.size() == 1) {
-                        cropView = imageView.highlightViews.get(0);
-                        cropView.setFocus(true);
+                        pickerView = imageView.highlightViews.get(0);
+                        pickerView.setFocus(true);
                     }
                 }
             });
