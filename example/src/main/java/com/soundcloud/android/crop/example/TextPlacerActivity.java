@@ -1,8 +1,10 @@
 package com.soundcloud.android.crop.example;
 
 import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Rect;
 import android.os.Bundle;
-import android.util.Log;
 
 import com.soundcloud.android.crop.CropImageView;
 import com.soundcloud.android.crop.HighlightView;
@@ -33,10 +35,16 @@ public class TextPlacerActivity extends ImageAreaPickerActivity{
         pickerView = getPickerView();
         pickerView.setNeedCenterBaseOnThis(false);
         pickerView.setShowThirds(false);
+
+        final Paint paint = new Paint();
+        paint.setColor(Color.RED);
+        paint.setAlpha(100);
+
         pickerView.setOnDrawFinshed(new HighlightView.OnDrawFinished() {
             @Override
             public void onDrawFinished(HighlightView v, Canvas canvas) {
-                Log.d("TempTag", "on draw finished.");
+                Rect vArea = v.getCropRectOnScreen();
+                canvas.drawRect(vArea, paint);
             }
         });
 

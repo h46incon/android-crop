@@ -407,6 +407,11 @@ public class HighlightView {
                 (int) (cropRect.right * scale), (int) (cropRect.bottom * scale));
     }
 
+    // Returns showing area in screen
+    public Rect getCropRectOnScreen() {
+        return computeLayout();
+    }
+
     // Maps the cropping rectangle from image space to screen space
     private Rect computeLayout() {
         RectF r = new RectF(cropRect.left, cropRect.top,
