@@ -97,9 +97,12 @@ public abstract class ImageAreaPickerActivity extends MonitoredActivity {
         );
     }
 
-    protected void setResultException(Throwable throwable) {
-        setResult(Crop.RESULT_ERROR, new Intent().putExtra(Crop.Extra.ERROR, throwable));
-    }
+    /**
+     * When an exception occurs, it will call this method to put message in result
+     *
+     * @param throwable exception occurred.
+     */
+    protected abstract void setResultException(Throwable throwable);
 
     private static int getMaxImageSize() {
         int textureLimit = getMaxTextureSize();

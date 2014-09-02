@@ -73,6 +73,11 @@ public class CropImageActivity extends ImageAreaPickerActivity {
         startCrop(imageView, aspectX, aspectY);
     }
 
+    @Override
+    protected void setResultException(Throwable throwable) {
+        setResult(Crop.RESULT_ERROR, new Intent().putExtra(Crop.Extra.ERROR, throwable));
+    }
+
     private void setupFromIntentSelf() {
         Intent intent = getIntent();
         Bundle extras = intent.getExtras();
