@@ -30,6 +30,7 @@ public abstract class ImageAreaPickerActivity extends MonitoredActivity {
     private int aspectY;
     private int sampleSize;
 
+    /* those method is init when onCreate */
     protected RotateBitmap rotateBitmap;
     protected int exifRotation;
     protected Uri sourceUri;
@@ -90,6 +91,10 @@ public abstract class ImageAreaPickerActivity extends MonitoredActivity {
         );
     }
 
+    protected void setResultException(Throwable throwable) {
+        setResult(Crop.RESULT_ERROR, new Intent().putExtra(Crop.Extra.ERROR, throwable));
+    }
+
     private static int getMaxImageSize() {
         int textureLimit = getMaxTextureSize();
         if (textureLimit == 0) {
@@ -106,7 +111,7 @@ public abstract class ImageAreaPickerActivity extends MonitoredActivity {
         return maxSize[0];
     }
 
-    protected int calculateBitmapSampleSize(Uri bitmapUri) throws IOException {
+    private int calculateBitmapSampleSize(Uri bitmapUri) throws IOException {
         InputStream is = null;
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
@@ -155,10 +160,6 @@ public abstract class ImageAreaPickerActivity extends MonitoredActivity {
                 CropUtil.closeSilently(is);
             }
         }
-    }
-
-    protected void setResultException(Throwable throwable) {
-        setResult(Crop.RESULT_ERROR, new Intent().putExtra(Crop.Extra.ERROR, throwable));
     }
 
     private class Cropper {
