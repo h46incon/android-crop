@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Rect;
+import android.graphics.RectF;
 import android.net.Uri;
 import android.opengl.GLES10;
 import android.os.Bundle;
@@ -78,18 +79,18 @@ public abstract class ImageAreaPickerActivity extends MonitoredActivity {
         setupPickerView(cropImageView, Float.NaN, null);
     }
 
-    protected void setupPickerView(CropImageView cropImageView, Rect initImageArea) {
-        setupPickerView(cropImageView, initImageArea, false);
+    protected void setupPickerView(CropImageView cropImageView, RectF initSelectPart) {
+        setupPickerView(cropImageView, initSelectPart, false);
     }
 
     protected void setupPickerView(CropImageView cropImageView,
-                                   Rect initImageArea, boolean maintainAspectRatio) {
+                                   RectF initSelectPart, boolean maintainAspectRatio) {
         Float ratio = Float.NaN;
         if (maintainAspectRatio) {
-            ratio = (float)initImageArea.height() / initImageArea.width();
+            ratio = initSelectPart.height() / initSelectPart.width();
         }
 
-        setupPickerView(cropImageView, ratio, initImageArea);
+        setupPickerView(cropImageView, ratio, initSelectPart);
     }
 
     protected void setupPickerView(CropImageView cropImageView, float aspectRatio) {
@@ -98,12 +99,13 @@ public abstract class ImageAreaPickerActivity extends MonitoredActivity {
 
     /**
      *  @param aspectRatio if equals to Float.NaN, it will not maintain aspect ratio
-     *  @param initImageArea if equals to null, it will use default area
-     *  Note: if aspectRatio != Float.NaN and initImageArea != null, it will maintain aspect ratio,
-     *                  but use aspect ratio values in INITAREA, and IGNORE aspectRatio
+     *  @param initSelectPart highlight area, Float value in [0,1]
+     *                        if equals to null, it will use default area
+     *  Note: if aspectRatio != Float.NaN and initSelectPart != null, it will maintain aspect ratio,
+     *                  but use aspect ratio values in initSelectPart, and IGNORE aspectRatio
      */
     private void setupPickerView(CropImageView cropImageView,
-                                   float aspectRatio, Rect initImageArea) {
+                                   float aspectRatio, RectF initSelectPart) {
         if (isFinishing()) {
             return;
         }
@@ -120,7 +122,7 @@ public abstract class ImageAreaPickerActivity extends MonitoredActivity {
         });
 
         this.imageView.setImageRotateBitmapResetBase(rotateBitmap, true);
-        pickerView = setupDefaultPickerView(initImageArea);
+        pickerView = setupDefaultPickerView(initSelectPart);
         isPickerViewSetup = true;
     }
 
@@ -223,7 +225,7 @@ public abstract class ImageAreaPickerActivity extends MonitoredActivity {
         }
     }
 
-    private HighlightView setupDefaultPickerView(Rect initCropRect) {
+    private HighlightView setupDefaultPickerView(RectF initSelectPart) {
         if (rotateBitmap == null) {
             return null;
         }
@@ -233,9 +235,16 @@ public abstract class ImageAreaPickerActivity extends MonitoredActivity {
         final int height = rotateBitmap.getHeight();
 
         Rect imageRect = new Rect(0, 0, width, height);
-        Rect cropRect = initCropRect;
+        Rect cropRect;
+        if (initSelectPart != null) {
+            cropRect = new Rect(
+                    (int) (initSelectPart.left * width),
+                    (int) (initSelectPart.top * height),
+                    (int) (initSelectPart.right * width),
+                    (int) (initSelectPart.bottom * height)
+            );
 
-        if (cropRect == null) {
+        } else {
             // Make the default size about 4/5 of the width or height
             int cropWidth = Math.min(width, height) * 4 / 5;
             @SuppressWarnings("SuspiciousNameCombination")
