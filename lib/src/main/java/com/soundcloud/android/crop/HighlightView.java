@@ -39,7 +39,7 @@ import android.view.View;
  * image, another is screen. computeLayout() uses matrix to map from image
  * space to screen space.
  */
-class HighlightView {
+public class HighlightView {
 	public static interface OnDrawFinished {
 		public void onDrawFinished(HighlightView v, Canvas canvas);
 	}
