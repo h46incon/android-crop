@@ -88,13 +88,17 @@ public class CropImageActivity extends ImageAreaPickerActivity {
      * (possibly large) Bitmap doesn't need to be read into memory
      */
     private void onSaveClicked() {
-        if (cropView == null || isSaving) {
+        if (isSaving) {
+            return;
+        }
+
+        Rect r = getImageSelectedArea();
+        if (r == null) {
             return;
         }
         isSaving = true;
 
         Bitmap croppedImage = null;
-        Rect r = cropView.getScaledCropRect(sampleSize);
         int width = r.width();
         int height = r.height();
 

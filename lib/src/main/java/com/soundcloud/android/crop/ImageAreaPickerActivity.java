@@ -24,20 +24,31 @@ public abstract class ImageAreaPickerActivity extends MonitoredActivity {
     private static final int SIZE_LIMIT = 4096;
     private final Handler handler = new Handler();
     private CropImageView imageView;
+    private HighlightView cropView;
 
     private int aspectX;
     private int aspectY;
+    private int sampleSize;
 
     protected RotateBitmap rotateBitmap;
-    protected HighlightView cropView;
     protected int exifRotation;
     protected Uri sourceUri;
-    protected int sampleSize;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setupFromIntent();
+    }
+
+    /**
+     * get selected area in Image.
+     * @return null is not starting crop
+     */
+    protected Rect getImageSelectedArea() {
+        if (cropView == null) {
+            return null;
+        }
+        return cropView.getScaledCropRect(sampleSize);
     }
 
     protected void startCrop(final CropImageView cropImageView) {
