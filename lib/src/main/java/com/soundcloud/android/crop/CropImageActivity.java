@@ -67,6 +67,7 @@ public class CropImageActivity extends ImageAreaPickerActivity {
         initViews();
 
         setupFromIntent();
+        setupFromIntentSelf();
         if (rotateBitmap == null) {
             finish();
             return;
@@ -81,9 +82,6 @@ public class CropImageActivity extends ImageAreaPickerActivity {
         if (extras != null) {
             aspectX = extras.getInt(Crop.Extra.ASPECT_X);
             aspectY = extras.getInt(Crop.Extra.ASPECT_Y);
-            maxX = extras.getInt(Crop.Extra.MAX_X);
-            maxY = extras.getInt(Crop.Extra.MAX_Y);
-            saveUri = extras.getParcelable(MediaStore.EXTRA_OUTPUT);
         }
 
         sourceUri = intent.getData();
@@ -106,6 +104,17 @@ public class CropImageActivity extends ImageAreaPickerActivity {
             } finally {
                 CropUtil.closeSilently(is);
             }
+        }
+    }
+
+    private void setupFromIntentSelf() {
+        Intent intent = getIntent();
+        Bundle extras = intent.getExtras();
+
+        if (extras != null) {
+            maxX = extras.getInt(Crop.Extra.MAX_X);
+            maxY = extras.getInt(Crop.Extra.MAX_Y);
+            saveUri = extras.getParcelable(MediaStore.EXTRA_OUTPUT);
         }
     }
 
