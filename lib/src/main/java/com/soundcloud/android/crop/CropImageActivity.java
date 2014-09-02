@@ -70,7 +70,7 @@ public class CropImageActivity extends ImageAreaPickerActivity {
             finish();
             return;
         }
-        setupPickerView(imageView, aspectX, aspectY);
+        setupPickerView(imageView, (float)aspectY / aspectX);
         startPicker();
     }
 

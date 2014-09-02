@@ -28,8 +28,9 @@ public abstract class ImageAreaPickerActivity extends MonitoredActivity {
 
     private boolean isPickerViewSetup = false;
 
-    private int aspectX;
-    private int aspectY;
+//    private int aspectX;
+//    private int aspectY;
+    private Float aspectRatio;      // height : width
     private int sampleSize;
 
     /* those method is init when onCreate */
@@ -62,17 +63,41 @@ public abstract class ImageAreaPickerActivity extends MonitoredActivity {
         return isPickerViewSetup;
     }
 
-    protected void setupPickerView(final CropImageView cropImageView) {
-        setupPickerView(cropImageView, 0, 0);
+    protected void setupPickerView(CropImageView cropImageView) {
+        setupPickerView(cropImageView, Float.NaN, null);
     }
 
-    protected void setupPickerView(final CropImageView cropImageView, int aspectX, int aspectY) {
+    protected void setupPickerView(CropImageView cropImageView, RectF initImageArea) {
+        setupPickerView(cropImageView, initImageArea, false);
+    }
+
+    protected void setupPickerView(CropImageView cropImageView,
+                                   RectF initImageArea, boolean maintainAspectRatio) {
+        Float ratio = Float.NaN;
+        if (maintainAspectRatio) {
+            ratio = initImageArea.height() / initImageArea.width();
+        }
+
+        setupPickerView(cropImageView, ratio, initImageArea);
+    }
+
+    protected void setupPickerView(CropImageView cropImageView, float aspectRatio) {
+        setupPickerView(cropImageView, aspectRatio, null);
+    }
+
+    /**
+     *  @param aspectRatio if equals to Float.NaN, it will not maintain aspect ratio
+     *  @param initImageArea if equals to null, it will use default area
+     *  Note: if aspectRatio != Float.NaN and initImageArea != null, it will maintain aspect ratio,
+     *                  but use aspect ratio values in INITAREA, and IGNORE aspectRatio
+     */
+    private void setupPickerView(CropImageView cropImageView,
+                                   float aspectRatio, RectF initImageArea) {
         if (isFinishing()) {
             return;
         }
 
-        this.aspectX = aspectX;
-        this.aspectY = aspectY;
+        this.aspectRatio = aspectRatio;
         imageView = cropImageView;
         imageView.context = this;
         imageView.setRecycler(new ImageViewTouchBase.Recycler() {
@@ -84,7 +109,7 @@ public abstract class ImageAreaPickerActivity extends MonitoredActivity {
         });
 
         this.imageView.setImageRotateBitmapResetBase(rotateBitmap, true);
-        pickerView = setupDefaultPickerView();
+        pickerView = setupDefaultPickerView(initImageArea);
         isPickerViewSetup = true;
     }
 
@@ -187,7 +212,7 @@ public abstract class ImageAreaPickerActivity extends MonitoredActivity {
         }
     }
 
-    private HighlightView setupDefaultPickerView() {
+    private HighlightView setupDefaultPickerView(RectF initCropRect) {
         if (rotateBitmap == null) {
             return null;
         }
@@ -197,25 +222,29 @@ public abstract class ImageAreaPickerActivity extends MonitoredActivity {
         final int height = rotateBitmap.getHeight();
 
         Rect imageRect = new Rect(0, 0, width, height);
+        RectF cropRect = initCropRect;
 
-        // Make the default size about 4/5 of the width or height
-        int cropWidth = Math.min(width, height) * 4 / 5;
-        @SuppressWarnings("SuspiciousNameCombination")
-        int cropHeight = cropWidth;
+        if (cropRect == null) {
+            // Make the default size about 4/5 of the width or height
+            int cropWidth = Math.min(width, height) * 4 / 5;
+            @SuppressWarnings("SuspiciousNameCombination")
+            int cropHeight = cropWidth;
 
-        if (aspectX != 0 && aspectY != 0) {
-            if (aspectX > aspectY) {
-                cropHeight = cropWidth * aspectY / aspectX;
-            } else {
-                cropWidth = cropHeight * aspectX / aspectY;
+            if (!aspectRatio.isNaN()) {
+                if (aspectRatio < 1) {
+                    cropHeight = (int) (cropWidth * aspectRatio);
+                } else {
+                    cropWidth = (int) (cropHeight / aspectRatio);
+                }
+
             }
+
+            int x = (width - cropWidth) / 2;
+            int y = (height - cropHeight) / 2;
+
+            cropRect = new RectF(x, y, x + cropWidth, y + cropHeight);
         }
-
-        int x = (width - cropWidth) / 2;
-        int y = (height - cropHeight) / 2;
-
-        RectF cropRect = new RectF(x, y, x + cropWidth, y + cropHeight);
-        hv.setup(imageView.getUnrotatedMatrix(), imageRect, cropRect, aspectX != 0 && aspectY != 0);
+        hv.setup(imageView.getUnrotatedMatrix(), imageRect, cropRect, !aspectRatio.isNaN());
         return hv;
     }
 
