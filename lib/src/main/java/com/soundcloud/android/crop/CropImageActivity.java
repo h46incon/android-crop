@@ -29,6 +29,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.view.View;
 import android.view.Window;
 
 import com.soundcloud.android.crop.util.Log;
@@ -44,6 +45,7 @@ public class CropImageActivity extends ImageAreaPickerActivity {
 
     private static final boolean IN_MEMORY_CROP = Build.VERSION.SDK_INT < Build.VERSION_CODES.GINGERBREAD_MR1;
 
+    private CropImageView imageView;
     // Output image size
     private int maxX;
     private int maxY;
@@ -64,7 +66,7 @@ public class CropImageActivity extends ImageAreaPickerActivity {
             finish();
             return;
         }
-        startCrop();
+        startCrop(imageView);
     }
 
     private void setupFromIntentSelf() {
@@ -290,5 +292,21 @@ public class CropImageActivity extends ImageAreaPickerActivity {
         setResult(RESULT_OK, new Intent().putExtra(MediaStore.EXTRA_OUTPUT, uri));
     }
 
+    protected void initViews() {
+        imageView = (CropImageView) findViewById(R.id.crop_image);
+
+        findViewById(R.id.btn_cancel).setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                setResult(RESULT_CANCELED);
+                finish();
+            }
+        });
+
+        findViewById(R.id.btn_done).setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                onDone();
+            }
+        });
+    }
 }
 

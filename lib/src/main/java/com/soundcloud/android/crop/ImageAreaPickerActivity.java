@@ -9,7 +9,6 @@ import android.net.Uri;
 import android.opengl.GLES10;
 import android.os.Bundle;
 import android.os.Handler;
-import android.view.View;
 
 import com.soundcloud.android.crop.util.Log;
 
@@ -24,7 +23,7 @@ public abstract class ImageAreaPickerActivity extends MonitoredActivity {
     private static final int SIZE_DEFAULT = 2048;
     private static final int SIZE_LIMIT = 4096;
     protected final Handler handler = new Handler();
-    protected CropImageView imageView;
+    private CropImageView imageView;
     protected int aspectX;
     protected int aspectY;
     protected RotateBitmap rotateBitmap;
@@ -39,8 +38,12 @@ public abstract class ImageAreaPickerActivity extends MonitoredActivity {
         setupFromIntent();
     }
 
-    protected void initViews() {
-        imageView = (CropImageView) findViewById(R.id.crop_image);
+    protected void startCrop(final CropImageView cropImageView) {
+        if (isFinishing()) {
+            return;
+        }
+
+        imageView = cropImageView;
         imageView.context = this;
         imageView.setRecycler(new ImageViewTouchBase.Recycler() {
             @Override
@@ -50,25 +53,7 @@ public abstract class ImageAreaPickerActivity extends MonitoredActivity {
             }
         });
 
-        findViewById(R.id.btn_cancel).setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                setResult(RESULT_CANCELED);
-                finish();
-            }
-        });
-
-        findViewById(R.id.btn_done).setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                onDone();
-            }
-        });
-    }
-
-    protected void startCrop() {
-        if (isFinishing()) {
-            return;
-        }
-        imageView.setImageRotateBitmapResetBase(rotateBitmap, true);
+        this.imageView.setImageRotateBitmapResetBase(rotateBitmap, true);
         CropUtil.startBackgroundJob(this, null, getResources().getString(R.string.crop__wait),
                 new Runnable() {
                     public void run() {
