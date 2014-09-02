@@ -51,6 +51,8 @@ public class CropImageActivity extends ImageAreaPickerActivity {
     // Output image size
     private int maxX;
     private int maxY;
+    private int aspectX;
+    private int aspectY;
 
     private Uri saveUri;
 
@@ -68,7 +70,7 @@ public class CropImageActivity extends ImageAreaPickerActivity {
             finish();
             return;
         }
-        startCrop(imageView);
+        startCrop(imageView, aspectX, aspectY);
     }
 
     private void setupFromIntentSelf() {
@@ -76,6 +78,8 @@ public class CropImageActivity extends ImageAreaPickerActivity {
         Bundle extras = intent.getExtras();
 
         if (extras != null) {
+            aspectX = extras.getInt(Crop.Extra.ASPECT_X);
+            aspectY = extras.getInt(Crop.Extra.ASPECT_Y);
             maxX = extras.getInt(Crop.Extra.MAX_X);
             maxY = extras.getInt(Crop.Extra.MAX_Y);
             saveUri = extras.getParcelable(MediaStore.EXTRA_OUTPUT);

@@ -53,10 +53,16 @@ public abstract class ImageAreaPickerActivity extends MonitoredActivity {
     }
 
     protected void startCrop(final CropImageView cropImageView) {
+        startCrop(cropImageView, 0, 0);
+    }
+
+    protected void startCrop(final CropImageView cropImageView, int aspectX, int aspectY) {
         if (isFinishing()) {
             return;
         }
 
+        this.aspectX = aspectX;
+        this.aspectY = aspectY;
         imageView = cropImageView;
         imageView.context = this;
         imageView.setRecycler(new ImageViewTouchBase.Recycler() {
@@ -134,10 +140,6 @@ public abstract class ImageAreaPickerActivity extends MonitoredActivity {
         Intent intent = getIntent();
         Bundle extras = intent.getExtras();
 
-        if (extras != null) {
-            aspectX = extras.getInt(Crop.Extra.ASPECT_X);
-            aspectY = extras.getInt(Crop.Extra.ASPECT_Y);
-        }
 
         sourceUri = intent.getData();
         if (sourceUri != null) {
