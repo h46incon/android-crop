@@ -272,19 +272,6 @@ public class CropImageActivity extends ImageAreaPickerActivity {
         finish();
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        if (rotateBitmap != null) {
-            rotateBitmap.recycle();
-        }
-    }
-
-    @Override
-    public boolean onSearchRequested() {
-        return false;
-    }
-
     public boolean isSaving() {
         return isSaving;
     }
@@ -293,7 +280,7 @@ public class CropImageActivity extends ImageAreaPickerActivity {
         setResult(RESULT_OK, new Intent().putExtra(MediaStore.EXTRA_OUTPUT, uri));
     }
 
-    protected void initViews() {
+    private void initViews() {
         imageView = (CropImageView) findViewById(R.id.crop_image);
 
         findViewById(R.id.btn_cancel).setOnClickListener(new View.OnClickListener() {

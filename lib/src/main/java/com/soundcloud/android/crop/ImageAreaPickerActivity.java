@@ -162,6 +162,19 @@ public abstract class ImageAreaPickerActivity extends MonitoredActivity {
         }
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (rotateBitmap != null) {
+            rotateBitmap.recycle();
+        }
+    }
+
+    @Override
+    public boolean onSearchRequested() {
+        return false;
+    }
+
     private class Cropper {
 
         private void makeDefault() {
