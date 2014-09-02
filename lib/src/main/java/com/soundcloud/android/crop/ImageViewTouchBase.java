@@ -252,7 +252,7 @@ abstract class ImageViewTouchBase extends ImageView {
         return getValue(matrix, Matrix.MSCALE_X);
     }
 
-    protected float getScale() {
+    public float getScale() {
         return getScale(suppMatrix);
     }
 
