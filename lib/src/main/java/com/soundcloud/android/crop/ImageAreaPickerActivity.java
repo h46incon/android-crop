@@ -22,10 +22,12 @@ import java.util.concurrent.CountDownLatch;
 public abstract class ImageAreaPickerActivity extends MonitoredActivity {
     private static final int SIZE_DEFAULT = 2048;
     private static final int SIZE_LIMIT = 4096;
-    protected final Handler handler = new Handler();
+    private final Handler handler = new Handler();
     private CropImageView imageView;
-    protected int aspectX;
-    protected int aspectY;
+
+    private int aspectX;
+    private int aspectY;
+
     protected RotateBitmap rotateBitmap;
     protected HighlightView cropView;
     protected int exifRotation;

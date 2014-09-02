@@ -28,6 +28,7 @@ import android.graphics.RectF;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.provider.MediaStore;
 import android.view.View;
 import android.view.Window;
@@ -45,6 +46,7 @@ public class CropImageActivity extends ImageAreaPickerActivity {
 
     private static final boolean IN_MEMORY_CROP = Build.VERSION.SDK_INT < Build.VERSION_CODES.GINGERBREAD_MR1;
 
+    private final Handler handler = new Handler();
     private CropImageView imageView;
     // Output image size
     private int maxX;
