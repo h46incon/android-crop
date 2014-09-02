@@ -84,6 +84,7 @@ public abstract class ImageAreaPickerActivity extends MonitoredActivity {
         });
 
         this.imageView.setImageRotateBitmapResetBase(rotateBitmap, true);
+        pickerView = setupDefaultPickerView();
         isPickerViewSetup = true;
     }
 
@@ -184,6 +185,38 @@ public abstract class ImageAreaPickerActivity extends MonitoredActivity {
         }
     }
 
+    private HighlightView setupDefaultPickerView() {
+        if (rotateBitmap == null) {
+            return null;
+        }
+
+        HighlightView hv = new HighlightView(imageView);
+        final int width = rotateBitmap.getWidth();
+        final int height = rotateBitmap.getHeight();
+
+        Rect imageRect = new Rect(0, 0, width, height);
+
+        // Make the default size about 4/5 of the width or height
+        int cropWidth = Math.min(width, height) * 4 / 5;
+        @SuppressWarnings("SuspiciousNameCombination")
+        int cropHeight = cropWidth;
+
+        if (aspectX != 0 && aspectY != 0) {
+            if (aspectX > aspectY) {
+                cropHeight = cropWidth * aspectY / aspectX;
+            } else {
+                cropWidth = cropHeight * aspectX / aspectY;
+            }
+        }
+
+        int x = (width - cropWidth) / 2;
+        int y = (height - cropHeight) / 2;
+
+        RectF cropRect = new RectF(x, y, x + cropWidth, y + cropHeight);
+        hv.setup(imageView.getUnrotatedMatrix(), imageRect, cropRect, aspectX != 0 && aspectY != 0);
+        return hv;
+    }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -199,42 +232,12 @@ public abstract class ImageAreaPickerActivity extends MonitoredActivity {
 
     private class AreaPicker {
 
-        private void makeDefault() {
-            if (rotateBitmap == null) {
-                return;
-            }
-
-            HighlightView hv = new HighlightView(imageView);
-            final int width = rotateBitmap.getWidth();
-            final int height = rotateBitmap.getHeight();
-
-            Rect imageRect = new Rect(0, 0, width, height);
-
-            // Make the default size about 4/5 of the width or height
-            int cropWidth = Math.min(width, height) * 4 / 5;
-            @SuppressWarnings("SuspiciousNameCombination")
-            int cropHeight = cropWidth;
-
-            if (aspectX != 0 && aspectY != 0) {
-                if (aspectX > aspectY) {
-                    cropHeight = cropWidth * aspectY / aspectX;
-                } else {
-                    cropWidth = cropHeight * aspectX / aspectY;
-                }
-            }
-
-            int x = (width - cropWidth) / 2;
-            int y = (height - cropHeight) / 2;
-
-            RectF cropRect = new RectF(x, y, x + cropWidth, y + cropHeight);
-            hv.setup(imageView.getUnrotatedMatrix(), imageRect, cropRect, aspectX != 0 && aspectY != 0);
-            imageView.add(hv);
-        }
 
         public void start() {
             handler.post(new Runnable() {
                 public void run() {
-                    makeDefault();
+                    imageView.highlightViews.clear();
+                    imageView.add(pickerView);
                     imageView.invalidate();
                     if (imageView.highlightViews.size() == 1) {
                         pickerView = imageView.highlightViews.get(0);
