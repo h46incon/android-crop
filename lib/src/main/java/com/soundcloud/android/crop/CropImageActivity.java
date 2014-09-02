@@ -65,7 +65,7 @@ public class CropImageActivity extends ImageAreaPickerActivity {
         setContentView(R.layout.crop__activity_crop);
         initViews();
 
-        setupFromIntentSelf();
+        setupFromIntent();
         if (rotateBitmap == null) {
             finish();
             return;
@@ -78,7 +78,7 @@ public class CropImageActivity extends ImageAreaPickerActivity {
         setResult(Crop.RESULT_ERROR, new Intent().putExtra(Crop.Extra.ERROR, throwable));
     }
 
-    private void setupFromIntentSelf() {
+    private void setupFromIntent() {
         Intent intent = getIntent();
         Bundle extras = intent.getExtras();
 

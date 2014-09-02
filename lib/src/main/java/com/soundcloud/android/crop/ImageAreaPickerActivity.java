@@ -52,6 +52,10 @@ public abstract class ImageAreaPickerActivity extends MonitoredActivity {
         return cropView.getScaledCropRect(sampleSize);
     }
 
+    protected HighlightView getCropView() {
+        return cropView;
+    }
+
     protected void startCrop(final CropImageView cropImageView) {
         startCrop(cropImageView, 0, 0);
     }
@@ -141,8 +145,6 @@ public abstract class ImageAreaPickerActivity extends MonitoredActivity {
 
     private void setupFromIntent() {
         Intent intent = getIntent();
-        Bundle extras = intent.getExtras();
-
 
         sourceUri = intent.getData();
         if (sourceUri != null) {
