@@ -1,6 +1,7 @@
 <resources>
 
     <string name="app_name">Crop Demo</string>
-    <string name="action_select">Select</string>
+    <string name="action_crop_image">CropImage</string>
+    <string name="action_place_text">PlaceText</string>
 
 </resources>
