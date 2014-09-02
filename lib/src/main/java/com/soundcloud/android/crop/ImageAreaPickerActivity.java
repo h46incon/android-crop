@@ -124,6 +124,8 @@ public abstract class ImageAreaPickerActivity extends MonitoredActivity {
      */
     protected abstract void setResultException(Throwable throwable);
 
+    protected abstract boolean respondTouchEvent();
+
     private static int getMaxImageSize() {
         int textureLimit = getMaxTextureSize();
         if (textureLimit == 0) {
