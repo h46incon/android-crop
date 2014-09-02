@@ -144,13 +144,6 @@ public abstract class ImageAreaPickerActivity extends MonitoredActivity {
         }
     }
 
-    /**
-     *  This method will be called when DONE button is clicked.
-     */
-    protected void onDone(){
-        return;
-    }
-
     protected void setResultException(Throwable throwable) {
         setResult(Crop.RESULT_ERROR, new Intent().putExtra(Crop.Extra.ERROR, throwable));
     }

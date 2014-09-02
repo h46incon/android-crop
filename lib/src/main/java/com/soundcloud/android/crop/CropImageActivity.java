@@ -80,11 +80,6 @@ public class CropImageActivity extends ImageAreaPickerActivity {
         }
     }
 
-    protected void onDone() {
-        super.onDone();
-        onSaveClicked();
-    }
-
     /*
      * TODO
      * This should use the decode/crop/encode single step API so that the whole
@@ -304,7 +299,7 @@ public class CropImageActivity extends ImageAreaPickerActivity {
 
         findViewById(R.id.btn_done).setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                onDone();
+                onSaveClicked();
             }
         });
     }
