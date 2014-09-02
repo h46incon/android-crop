@@ -1,13 +1,17 @@
 package com.soundcloud.android.crop;
 
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Rect;
 import android.graphics.RectF;
+import android.net.Uri;
 import android.opengl.GLES10;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.concurrent.CountDownLatch;
 
 /**
@@ -81,7 +85,7 @@ public abstract class ImageAreaPickerActivity extends MonitoredActivity {
         );
     }
 
-    protected static int getMaxImageSize() {
+    private static int getMaxImageSize() {
         int textureLimit = getMaxTextureSize();
         if (textureLimit == 0) {
             return SIZE_DEFAULT;
@@ -95,6 +99,25 @@ public abstract class ImageAreaPickerActivity extends MonitoredActivity {
         int[] maxSize = new int[1];
         GLES10.glGetIntegerv(GLES10.GL_MAX_TEXTURE_SIZE, maxSize, 0);
         return maxSize[0];
+    }
+
+    protected int calculateBitmapSampleSize(Uri bitmapUri) throws IOException {
+        InputStream is = null;
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+        try {
+            is = getContentResolver().openInputStream(bitmapUri);
+            BitmapFactory.decodeStream(is, null, options); // Just get image size
+        } finally {
+            CropUtil.closeSilently(is);
+        }
+
+        int maxSize = getMaxImageSize();
+        int sampleSize = 1;
+        while (options.outHeight / sampleSize > maxSize || options.outWidth / sampleSize > maxSize) {
+            sampleSize = sampleSize << 1;
+        }
+        return sampleSize;
     }
 
     /**

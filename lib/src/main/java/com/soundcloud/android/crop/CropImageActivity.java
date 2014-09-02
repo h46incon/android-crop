@@ -115,25 +115,6 @@ public class CropImageActivity extends ImageAreaPickerActivity {
         }
     }
 
-    private int calculateBitmapSampleSize(Uri bitmapUri) throws IOException {
-        InputStream is = null;
-        BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inJustDecodeBounds = true;
-        try {
-            is = getContentResolver().openInputStream(bitmapUri);
-            BitmapFactory.decodeStream(is, null, options); // Just get image size
-        } finally {
-            CropUtil.closeSilently(is);
-        }
-
-        int maxSize = getMaxImageSize();
-        int sampleSize = 1;
-        while (options.outHeight / sampleSize > maxSize || options.outWidth / sampleSize > maxSize) {
-            sampleSize = sampleSize << 1;
-        }
-        return sampleSize;
-    }
-
     protected void onDone() {
         super.onDone();
         onSaveClicked();
