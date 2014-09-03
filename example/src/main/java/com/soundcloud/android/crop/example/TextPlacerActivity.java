@@ -7,6 +7,7 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.os.Bundle;
+import android.util.Log;
 
 import com.soundcloud.android.crop.CropImageView;
 import com.soundcloud.android.crop.HighlightView;
@@ -70,22 +71,34 @@ public class TextPlacerActivity extends ImageAreaPickerActivity{
         pickerView.setOnDrawFinshed(new HighlightView.OnDrawFinished() {
             @Override
             public void onDrawFinished(HighlightView v, Canvas canvas) {
-                Rect vArea = v.getCropRectOnScreen();
+                RectF vArea = v.getCropRectOnScreen();
 
-                float yRation = vArea.height() / (float) initTextBounds.height();
-                float newTextSize = initTextSize * yRation;
+                double yRation = (double)vArea.height() / (double) initTextBounds.height();
+                double newTextSize = initTextSize * yRation;
+                paint.setTextSize((float)newTextSize);
+//                paint.setTextScaleX(1f);
+//                paint.getTextBounds(text, 0, text.length(), targetRect);
+                double xTemp = initTextBounds.width() * yRation;
+//                Log.d("temp", String.format("xC:%f,xB:%d", (float)xTemp, targetRect.width()));
+//                paint.setTextScaleX(1f);
+//                paint.getTextBounds(text, 0, text.length(), targetRect);
+//                int height = targetRect.height();
+//                int width = targetRect.width();
+//                Log.d("testUnscaleWidth",
+//                        String.format("h:%d,w:%d,r:%f", height, width, (float) height / width));
 
-                float xTemp = vArea.width() / yRation;
-                float xScale = xTemp / initTextBounds.width();
+                double xScale = vArea.width() / xTemp;
 
-                paint.setTextSize(newTextSize);
-                paint.setTextScaleX(xScale);
+                //Log.d("testSize", "tb left" + targetRect.left);
+                // Log.d("testSize", String.format("H: %f, s %f, xs %f", vArea.height(), newTextSize, xScale));
 
+                paint.setTextScaleX((float)xScale);
                 paint.getTextBounds(text, 0, text.length(), targetRect);
+                Log.d("test", String.format("wG:%d, wT:%f, wC:%f", targetRect.width(), vArea.width(), xTemp * xScale));
                 int desent = targetRect.bottom;
 //                int baseline = targetRect.top + (targetRect.bottom - targetRect.top - fontMetrics.bottom + fontMetrics.top) / 2 - fontMetrics.top;
 //                canvas.drawRect(vArea, paint);
-                canvas.drawText(text, (float)vArea.left - targetRect.left, (float)vArea.bottom - desent, paint);
+                canvas.drawText(text, vArea.left, vArea.bottom - desent, paint);
             }
         });
 
@@ -94,11 +107,12 @@ public class TextPlacerActivity extends ImageAreaPickerActivity{
     }
 
     private void getInitTextBounds() {
-        initTextSize = 300;
+        initTextSize = 1024f;
         Paint paint = new Paint();
         paint.setTextSize(initTextSize);
         initTextBounds = new Rect();
         paint.getTextBounds(text, 0, text.length(), initTextBounds);
+        Log.d("test", "tb h " + initTextBounds.height());
         initTextAspectRatio = initTextBounds.height() / (float) initTextBounds.width();
     }
 
