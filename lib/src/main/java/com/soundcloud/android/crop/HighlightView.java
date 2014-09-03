@@ -408,17 +408,18 @@ public class HighlightView {
     }
 
     // Returns showing area in screen
-    public Rect getCropRectOnScreen() {
-        return computeLayout();
+    public RectF getCropRectOnScreen() {
+        RectF r = new RectF(cropRect.left, cropRect.top,
+                cropRect.right, cropRect.bottom);
+        matrix.mapRect(r);
+        return r;
     }
 
     // Maps the cropping rectangle from image space to screen space
     private Rect computeLayout() {
-        RectF r = new RectF(cropRect.left, cropRect.top,
-                            cropRect.right, cropRect.bottom);
-        matrix.mapRect(r);
+        RectF r = getCropRectOnScreen();
         return new Rect(Math.round(r.left), Math.round(r.top),
-                        Math.round(r.right), Math.round(r.bottom));
+                    Math.round(r.right), Math.round(r.bottom));
     }
 
     public void invalidate() {
