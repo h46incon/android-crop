@@ -64,7 +64,8 @@ public class TextPlacerActivity extends ImageAreaPickerActivity{
 
         final Paint paint = new Paint();
         paint.setColor(Color.RED);
-        paint.setAlpha(100);
+//        paint.setAlpha(100);
+        final Rect targetRect = new Rect();
 
         pickerView.setOnDrawFinshed(new HighlightView.OnDrawFinished() {
             @Override
@@ -80,11 +81,11 @@ public class TextPlacerActivity extends ImageAreaPickerActivity{
                 paint.setTextSize(newTextSize);
                 paint.setTextScaleX(xScale);
 
-//                Paint.FontMetricsInt fontMetrics = paint.getFontMetricsInt();
-                Rect targetRect = vArea;
+                paint.getTextBounds(text, 0, text.length(), targetRect);
+                int desent = targetRect.bottom;
 //                int baseline = targetRect.top + (targetRect.bottom - targetRect.top - fontMetrics.bottom + fontMetrics.top) / 2 - fontMetrics.top;
 //                canvas.drawRect(vArea, paint);
-                canvas.drawText(text, (float)vArea.left, (float)vArea.bottom, paint);
+                canvas.drawText(text, (float)vArea.left - targetRect.left, (float)vArea.bottom - desent, paint);
             }
         });
 
