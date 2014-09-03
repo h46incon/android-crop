@@ -89,6 +89,8 @@ public class HighlightView {
 
 	private boolean needCenterBaseOnThis = true;
 
+    private boolean ensureVisable = true;
+
     public HighlightView(View context) {
         viewContext = context;
         initStyles(context.getContext());
@@ -116,6 +118,14 @@ public class HighlightView {
 
     public void setMustInsideImage(boolean mustInsideImage) {
         this.mustInsideImage = mustInsideImage;
+    }
+
+    public boolean isEnsureVisable() {
+        return ensureVisable;
+    }
+
+    public void setEnsureVisable(boolean ensureVisable) {
+        this.ensureVisable = ensureVisable;
     }
 
 	public boolean isShowThirds()

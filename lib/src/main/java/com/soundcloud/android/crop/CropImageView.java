@@ -267,6 +267,9 @@ public class CropImageView extends ImageViewTouchBase {
 
     // Pan the displayed image to make sure the cropping rectangle is visible.
     private void ensureVisible(HighlightView hv) {
+        if (!hv.isEnsureVisable()) {
+            return;
+        }
         Rect r = hv.drawRect;
 
         int panDeltaX1 = Math.max(0, getLeft() - r.left);
