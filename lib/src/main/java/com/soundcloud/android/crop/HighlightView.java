@@ -40,7 +40,8 @@ import android.view.View;
  * space to screen space.
  */
 public class HighlightView {
-	public static interface OnDrawFinished {
+
+    public static interface OnDrawFinished {
 		public void onDrawFinished(HighlightView v, Canvas canvas);
 	}
 
@@ -56,7 +57,7 @@ public class HighlightView {
     private static final float OUTLINE_DP = 2f;
 
     enum ModifyMode { None, Move, Grow }
-    enum HandleMode { Changing, Always, Never }
+    public static enum HandleMode { Changing, Always, Never }
 
     RectF cropRect; // Image space
     Rect drawRect; // Screen space
@@ -74,10 +75,14 @@ public class HighlightView {
 	private boolean showThirds;
     private int highlightColor;
 
+    private boolean mustInsideImage = true;
+
     private ModifyMode modifyMode = ModifyMode.None;
+
     private HandleMode handleMode = HandleMode.Changing;
     private boolean maintainAspectRatio;
     private float initialAspectRatio;
+
     private float handleRadius;
     private float outlineWidth;
     private boolean isFocused;
@@ -87,6 +92,30 @@ public class HighlightView {
     public HighlightView(View context) {
         viewContext = context;
         initStyles(context.getContext());
+    }
+
+    public float getHandleRadius() {
+        return handleRadius;
+    }
+
+    public void setHandleRadius(float handleRadius) {
+        this.handleRadius = handleRadius;
+    }
+
+    public HandleMode getHandleMode() {
+        return handleMode;
+    }
+
+    public void setHandleMode(HandleMode handleMode) {
+        this.handleMode = handleMode;
+    }
+
+    public boolean isMustInsideImage() {
+        return mustInsideImage;
+    }
+
+    public void setMustInsideImage(boolean mustInsideImage) {
+        this.mustInsideImage = mustInsideImage;
     }
 
 	public boolean isShowThirds()
@@ -329,13 +358,15 @@ public class HighlightView {
         cropRect.offset(dx, dy);
 
         // Put the cropping rectangle inside image rectangle
-        cropRect.offset(
-                Math.max(0, imageRect.left - cropRect.left),
-                Math.max(0, imageRect.top  - cropRect.top));
+        if (mustInsideImage) {
+            cropRect.offset(
+                    Math.max(0, imageRect.left - cropRect.left),
+                    Math.max(0, imageRect.top  - cropRect.top));
 
-        cropRect.offset(
-                Math.min(0, imageRect.right  - cropRect.right),
-                Math.min(0, imageRect.bottom - cropRect.bottom));
+            cropRect.offset(
+                    Math.min(0, imageRect.right  - cropRect.right),
+                    Math.min(0, imageRect.bottom - cropRect.bottom));
+        }
 
         drawRect = computeLayout();
         invalRect.union(drawRect);
@@ -385,15 +416,17 @@ public class HighlightView {
         }
 
         // Put the cropping rectangle inside the image rectangle
-        if (r.left < imageRect.left) {
-            r.offset(imageRect.left - r.left, 0F);
-        } else if (r.right > imageRect.right) {
-            r.offset(-(r.right - imageRect.right), 0F);
-        }
-        if (r.top < imageRect.top) {
-            r.offset(0F, imageRect.top - r.top);
-        } else if (r.bottom > imageRect.bottom) {
-            r.offset(0F, -(r.bottom - imageRect.bottom));
+        if (mustInsideImage) {
+            if (r.left < imageRect.left) {
+                r.offset(imageRect.left - r.left, 0F);
+            } else if (r.right > imageRect.right) {
+                r.offset(-(r.right - imageRect.right), 0F);
+            }
+            if (r.top < imageRect.top) {
+                r.offset(0F, imageRect.top - r.top);
+            } else if (r.bottom > imageRect.bottom) {
+                r.offset(0F, -(r.bottom - imageRect.bottom));
+            }
         }
 
         cropRect.set(r);
