@@ -55,6 +55,20 @@ public abstract class ImageAreaPickerActivity extends MonitoredActivity {
         return pickerView.getScaledCropRect(sampleSize);
     }
 
+    protected int getImageWidth() {
+        if (rotateBitmap == null) {
+            return 0;
+        }
+        return rotateBitmap.getWidth() * sampleSize;
+    }
+
+    protected int getImageHeight() {
+        if (rotateBitmap == null) {
+            return 0;
+        }
+        return rotateBitmap.getHeight() * sampleSize;
+    }
+
     protected int getSampleSize() {
         return sampleSize;
     }
