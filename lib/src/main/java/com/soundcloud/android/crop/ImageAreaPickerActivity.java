@@ -126,6 +126,11 @@ public abstract class ImageAreaPickerActivity extends MonitoredActivity {
         isPickerViewSetup = true;
     }
 
+    public void stopPicker() {
+        imageView.highlightViews.clear();
+        imageView.invalidate();
+    }
+
     public void startPicker() {
         if (!isPickerViewSetup) {
             Log.e("The picker view has not been setup, call 'setupPickerView' first");
@@ -291,7 +296,7 @@ public abstract class ImageAreaPickerActivity extends MonitoredActivity {
                     imageView.add(pickerView);
                     imageView.invalidate();
                     if (imageView.highlightViews.size() == 1) {
-                        pickerView = imageView.highlightViews.get(0);
+//                        pickerView = imageView.highlightViews.get(0);
                         pickerView.setFocus(true);
                     }
                 }
