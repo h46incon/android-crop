@@ -141,8 +141,12 @@ public abstract class ImageAreaPickerActivity extends MonitoredActivity {
     }
 
     public void stopPicker() {
-        imageView.highlightViews.clear();
-        imageView.invalidate();
+        if (imageView != null) {
+            if (imageView.highlightViews != null) {
+                imageView.highlightViews.clear();
+            }
+            imageView.invalidate();
+        }
     }
 
     public void startPicker() {
