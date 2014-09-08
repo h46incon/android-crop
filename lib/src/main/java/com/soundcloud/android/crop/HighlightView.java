@@ -88,7 +88,7 @@ public class HighlightView {
     private boolean isFocused;
 
 	private boolean needCenterBaseOnThis = true;
-
+    private boolean darkenOutSide = true;
     private boolean ensureVisable = true;
 
     public HighlightView(View context) {
@@ -118,6 +118,14 @@ public class HighlightView {
 
     public void setMustInsideImage(boolean mustInsideImage) {
         this.mustInsideImage = mustInsideImage;
+    }
+
+    public boolean isDarkenOutSide() {
+        return darkenOutSide;
+    }
+
+    public void setDarkenOutSide(boolean darkenOutSide) {
+        this.darkenOutSide = darkenOutSide;
     }
 
     public boolean isEnsureVisable() {
@@ -213,11 +221,13 @@ public class HighlightView {
             path.addRect(new RectF(drawRect), Path.Direction.CW);
             outlinePaint.setColor(highlightColor);
 
-            if (isClipPathSupported(canvas)) {
-                canvas.clipPath(path, Region.Op.DIFFERENCE);
-                canvas.drawRect(viewDrawingRect, outsidePaint);
-            } else {
-                drawOutsideFallback(canvas);
+            if (darkenOutSide) {
+                if (isClipPathSupported(canvas)) {
+                    canvas.clipPath(path, Region.Op.DIFFERENCE);
+                    canvas.drawRect(viewDrawingRect, outsidePaint);
+                } else {
+                    drawOutsideFallback(canvas);
+                }
             }
 
             canvas.restore();
